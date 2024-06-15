@@ -5,7 +5,7 @@
 #replace your-dockerhub-username with your dockerhub username
 docker buildx create --use --platform=linux/arm64,linux/amd64 --name multi-platform-builder
 docker buildx inspect --bootstrap
-docker buildx build --platform=linux/arm64,linux/amd64 --push --tag etiquet/s3-upload-app:1.00 .
+docker buildx build --platform=linux/arm64,linux/amd64 --push --tag etiquet/s3-upload-app:1.01 .
 
 #user/create k8s cluster with nginx ingress controller
 
@@ -29,3 +29,17 @@ kubectl apply -f deployment.yaml -f service.yaml -f ingress-ngx.yaml
 
 #curl de test pour envoyer un fichier sur S3 via le docker image
 curl -X POST -H "Content-Type: text/xml" -H "X-Myheader: myheadervalue"   -d "<?xml version=\"1.0\"?>" http://api-cncs.numerique-interieur.com/ODFClient
+
+#curl de test pour envoyer un fichier sur S3 via le docker image
+curl -X POST -H "Content-Type: text/xml" -H "X-Myheader: myheadervalue"   -d "<?xml version=\"1.0\"?>" http://192.168.210.59:5001/ODFClient
+
+
+# pour tester comme ODF envoi les fichiers 
+curl -X POST -H "Content-Type: application/xml; charset=UTF-8" -H "X-API-KEY: ZHpiwUuiffdectKeJG24cVudQi9VXlYI" -d '@example-file.xml' http://api-cncs.numerique-interieur.com/ODFClient
+
+# pour teste avec mimetype bidon / inconnu > génére un fichier .rawbody
+curl -X POST -H "Content-Type: application/toto; charset=UTF-8" -H "X-API-KEY: ZHpiwUuiffdectKeJG24cVudQi9VXlYI" -d '@example-file.xml' http://api-cncs.numerique-interieur.com/ODFClient
+
+curl -H "X-Myheader: myheadervalue" http://api-cncs.numerique-interieur.com/health
+
+curl -X POST -H "Content-Type: text/zozo" -H "X-Myheader: myheadervalue"   -d "<?xml version=\"1.0\"?>" http://192.168.210.59:5001/ODFClient
