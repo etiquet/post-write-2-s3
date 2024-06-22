@@ -11,7 +11,7 @@ COPY app.py /app
 RUN pip install --no-cache-dir flask boto3 gunicorn
 
 # Use a distroless Python image as a base
-FROM gcr.io/distroless/python3
+FROM gcr.io/distroless/python3:nonroot
 
 # Set the working directory
 WORKDIR /app

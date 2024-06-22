@@ -76,15 +76,11 @@ def upload_content():
     file_name = f"{S3_FOLDER}/{current_time}_odf{extension}"
 
     try:
-        logger.info("Send content to bucket")
+        logger.info("Send content to bucket :" , file_name)
         s3.put_object(Bucket=S3_BUCKET, Key=file_name, Body=content, ContentType=content_type)
         return jsonify({'message': 'Content uploaded successfully', 'file_name': file_name}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-#if __name__ == '__main__':
-#    app.run(host='0.0.0.0', port=5000)
-
-if __name__ == "__main__":
-    from waitress import serve
-    serve(app, host="0.0.0.0", port=5000)    
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)

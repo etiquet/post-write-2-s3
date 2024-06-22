@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: s3-upload-app
-        image: etiquet/s3-upload-app:1.13
+        image: etiquet/s3-upload-app:1.16
         ports:
         - containerPort: 5000
         env:
