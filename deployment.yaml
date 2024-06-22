@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: s3-upload-app
-        image: etiquet/s3-upload-app:1.02
+        image: etiquet/s3-upload-app:1.07
         ports:
         - containerPort: 5000
         env:
@@ -43,3 +43,8 @@ spec:
             secretKeyRef:
               name: s3-upload-app-secret
               key: S3_URL
+        - name: S3_FOLDER
+          valueFrom:
+            secretKeyRef:
+              name: s3-upload-app-secret
+              key: S3_FOLDER
