@@ -2,7 +2,9 @@ from flask import Flask, request, jsonify, Blueprint
 import boto3
 import os
 from datetime import datetime
-import mimetypes, logging , gzip , io
+import mimetypes, logging , gzip , io , asyncio
+import httpx
+from urllib.parse import quote
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -16,6 +18,7 @@ S3_REGION = os.getenv("S3_REGION")
 S3_URL = os.getenv("S3_URL")
 S3_FOLDER = os.getenv("S3_FOLDER", "odfclient")
 S3_SKIP_VERIFY = os.getenv("S3_SKIP_VERIFY", "false").lower() == "true"
+S3_WEBHOOK = os.getenv("S3_WEBHOOK")
 
 s3 = boto3.client(
     "s3",
@@ -41,6 +44,24 @@ app.register_blueprint(health_check_bp)
 def decompress_gzip(data):
     with gzip.GzipFile(fileobj=io.BytesIO(data), mode='rb') as f:
         return f.read()
+
+async def post_webhook(file_name, original_request):
+    myheaders = dict(original_request.headers)
+    myheaders["Origin"] = quote(file_name )
+    #myheaders["Origin"] = quote(file_name, safe='')
+
+    logging.info(f"Webhook call to : {S3_WEBHOOK}  with header {myheaders} ")
+
+    async with httpx.AsyncClient(verify=not S3_SKIP_VERIFY) as client:
+        try:
+            response = await client.post(
+                S3_WEBHOOK,
+                headers=myheaders,
+                data=original_request.data
+            )
+            logging.info(f"Webhook call successful: {response.status_code} {response.text}")
+        except Exception as e:
+            logging.error(f"Webhook call failed: {str(e)}")
 
 @app.route('/ODFClient', methods=['POST'])
 def upload_content():
@@ -80,10 +101,14 @@ def upload_content():
     try:
         logger.info("Send content to bucket : %s ", file_name )
         s3.put_object(Bucket=S3_BUCKET, Key=file_name, Body=content, ContentType=content_type)
-        return jsonify({'message': 'Content uploaded successfully', 'file_name': file_name}), 200
-    except Exception as e:
-        logger.info("error putting content to bucket : %s ", str(e) )
 
+        if S3_WEBHOOK:
+            logger.info("Call webhook (with file name into odf_file_name http header %s) : " , S3_WEBHOOK )
+            asyncio.run(post_webhook(file_name, request))
+
+        return jsonify({'message': 'Content uploaded successfully', 'file_name': file_name}), 200
+    
+    except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
