@@ -15,13 +15,15 @@ S3_SECRET_ACCESS_KEY = os.getenv("S3_SECRET_ACCESS_KEY")
 S3_REGION = os.getenv("S3_REGION")
 S3_URL = os.getenv("S3_URL")
 S3_FOLDER = os.getenv("S3_FOLDER", "odfclient")
+S3_SKIP_VERIFY = os.getenv("S3_SKIP_VERIFY", "false").lower() == "true"
 
 s3 = boto3.client(
     "s3",
     aws_access_key_id=S3_ACCESS_KEY_ID,
     aws_secret_access_key=S3_SECRET_ACCESS_KEY,
     region_name=S3_REGION,
-    endpoint_url=S3_URL
+    endpoint_url=S3_URL,
+    verify=not S3_SKIP_VERIFY
 )
 
 #Kubernetes Health Check
@@ -76,10 +78,12 @@ def upload_content():
     file_name = f"{S3_FOLDER}/{current_time}_odf{extension}"
 
     try:
-        logger.info("Send content to bucket :" , file_name)
+        logger.info("Send content to bucket : %s ", file_name )
         s3.put_object(Bucket=S3_BUCKET, Key=file_name, Body=content, ContentType=content_type)
         return jsonify({'message': 'Content uploaded successfully', 'file_name': file_name}), 200
     except Exception as e:
+        logger.info("error putting content to bucket : %s ", str(e) )
+
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':

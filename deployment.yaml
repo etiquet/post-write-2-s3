@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: s3-upload-app
+  name: cnsc-s3-app-s3-upload-app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: s3-upload-app
+      app: cnsc-s3-app-s3-upload-app
   template:
     metadata:
       labels:
-        app: s3-upload-app
+        app: cnsc-s3-app-s3-upload-app
     spec:
       containers:
-      - name: s3-upload-app
-        image: etiquet/s3-upload-app:1.16
+      - name: cnsc-s3-app-s3-upload-app
+        image: docker.io/etiquet/s3-upload-app:1.22
         ports:
         - containerPort: 5000
         env:
@@ -48,3 +48,5 @@ spec:
             secretKeyRef:
               name: s3-upload-app-secret
               key: S3_FOLDER
+      imagePullSecrets:
+      - name: regcred
