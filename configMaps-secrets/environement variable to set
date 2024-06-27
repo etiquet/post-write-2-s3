@@ -1,0 +1,8 @@
+export S3_BUCKET=mon-bucket #<le nom du bucket >
+export S3_REGION=fr-par #peux être 1 en local miom >
+export S3_ACCESS_KEY_ID =aaaaaa
+export S3_SECRET_ACCESS_KEY =xxxxx
+export S3_FOLDER =toto/odfclient #l'emplacement du folder pour sauvegarder les fichers >
+export S3_URL=https://url-du-s3 #peut être http
+export S3_SKIP_VERIFY=true #pour ne pas vérifier le certificat du S3 et du webhook
+export S3_WEBHOOK = http://localhost:5002/ODFClient #pour appeler un autre service webhook qui reçoit la requete + le path du fichier créé dans le S3 dans le header Origin

@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: cnsc-s3-app-s3-upload-app
-        image: docker.io/etiquet/s3-upload-app:1.22
+        image: docker.io/etiquet/s3-upload-app:1.41
         ports:
         - containerPort: 5000
         env:
@@ -48,5 +48,28 @@ spec:
             secretKeyRef:
               name: s3-upload-app-secret
               key: S3_FOLDER
+        - name: S3_SKIP_VERIFY
+          valueFrom:
+            secretKeyRef:
+              name: s3-upload-app-secret
+              key: S3_SKIP_VERIFY    
+        - name: S3_WEBHOOK
+          valueFrom:
+            secretKeyRef:
+              name: s3-upload-app-secret
+              key: S3_WEBHOOK  
+        volumeMounts:
+        - name: tmp-folder
+          mountPath: /tmp
+        securityContext:
+          privileged: false
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem : true
+          runAsUser: 1000
+          runAsGroup: 1000
       imagePullSecrets:
       - name: regcred
+      volumes:
+      - name: tmp-folder
+        emptyDir:
+          sizeLimit: 500Mi

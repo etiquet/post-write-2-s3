@@ -128,7 +128,7 @@ extraEnvVarsSecret: ""
 
 ## @param replicaCount Number of NGINX replicas to deploy
 ##
-replicaCount: 1
+replicaCount: 2
 ## @param revisionHistoryLimit The number of old history to retain to allow rollback
 ##
 revisionHistoryLimit: 10
@@ -564,7 +564,9 @@ cloneStaticSiteFromGit:
 ## @param serverBlock Custom server block to be added to NGINX configuration
 ## PHP-FPM example server block:
 serverBlock: |-
-   
+    # This server block is just for initial setup and could be overwriten at pod startups
+    # by a "serverblock" config map mounted at /opt/bitnami/nginx/conf/server_blocks 
+
    log_format mylog '$remote_addr - [$time_local] '
         '"$request" $status $body_bytes_sent '
         '"$http_referer" "$http_user_agent" "$content_type" '
@@ -583,8 +585,6 @@ serverBlock: |-
       if ($request_method != POST) {
         return 405;
       }
-
-      #proxy_pass http://my-host.fake-domain.name/;
       proxy_pass http://s3-upload-app-service:5000/ODFClient ;
       proxy_set_header Host $host;
       proxy_set_header X-Real-IP $remote_addr;
