@@ -3,9 +3,9 @@
     # you may need to tweak the version regarding your environment and witch header to look for...
 map $http_x_original_forwarded_for $allow_proxy_pass {
     default 0;
-    "~*82\.64\.241\.24" 1;
-    "~*8\.211\.33\.110" 1;
-    "~*8\.211\.33\.111" 1;
+    "~*IP\.IP\.IP\.IP" 1;
+    "~*IP\.IP\.IP\.IP" 1;
+    "~*IP\.IP\.IP\.IP" 1;
 }
 
 upstream backend {
