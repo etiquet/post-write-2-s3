@@ -10,7 +10,7 @@ WORKDIR /app
 COPY app.py /app
 
 # Install the dependencies
-RUN pip install --no-cache-dir flask boto3 gunicorn
+RUN pip install --no-cache-dir flask boto3 gunicorn httpx
 
 # Use a distroless Python image as a base
 FROM gcr.io/distroless/python3:nonroot
@@ -24,6 +24,7 @@ COPY --from=builder /usr/local/lib/python3.8/site-packages /app/site-packages
 COPY --from=builder /usr/local/bin/gunicorn /usr/local/bin/gunicorn
 
 ENV PYTHONPATH /app/site-packages
+VOLUME ["/tmp"]
 
 # Command to run the application
 CMD ["/usr/local/bin/gunicorn", "-b", "0.0.0.0:5000", "app:app"]

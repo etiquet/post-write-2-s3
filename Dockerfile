@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY app.py /app
 
-RUN pip install flask boto3
+RUN pip install flask boto3 httpx
 
 ENV FLASK_APP=app.py
 
