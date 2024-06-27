@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: cnsc-s3-app-s3-upload-app
-        image: docker.io/etiquet/s3-upload-app:1.41
+        image: docker.io/etiquet/s3-upload-app:1.42
         ports:
         - containerPort: 5000
         env:
