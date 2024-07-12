@@ -1,24 +1,38 @@
-# This file is an example on how to use CI on Gitlab DSO platform, it is not yet functionnal with environnment
-# references for includes are at https://github.com/cloud-pi-native/gitlab-ci-catalog
-stages:
-  - read-secret
-  - build-push
-
 include:
   - project: $CATALOG_PATH
     file: vault-ci.yml
     ref: main
   - project: $CATALOG_PATH
-    file: kaniko-ci.yml
+    file: kaniko-ci-mirror.yml
     ref: main
 
-vault:read_secret:
-  stage: read-secret
-  extends: .vault:read_secret
+default:
+  image: alpine:latest
 
-build-push-branches:
-  extends: .kaniko:build-push
-  stage: build-push
+cache:
+  paths:
+    - node_modules
+
+variables:
+  TAG: "${CI_COMMIT_REF_SLUG}"
+  DOCKERFILE: Dockerfile
+  REGISTRY_URL: "${REGISTRY_HOST}/${PROJECT_PATH}"
+
+stages:
+  - read-secret
+  - docker-build
+
+read_secret:
+  stage: read-secret
+  extends:
+    - .vault:read_secret
+
+docker-build:
   variables:
-    WORKING_DIR: .
-    IMAGE_NAMES: explorer:$CI_BRANCH
+    WORKING_DIR: "."
+    IMAGE_NAMES: odf-webhook:${CI_COMMIT_REF_SLUG} odf-webhook:latest odf-webhook:0.0.1
+    TAG: "${CI_COMMIT_REF_SLUG}"
+  stage: docker-build
+  extends:
+    - .kaniko-mirror:build-push
+
