@@ -34,5 +34,5 @@ docker-build:
     TAG: "${CI_COMMIT_REF_SLUG}"
   stage: docker-build
   extends:
-    - .kaniko-mirror:build-push
+    - .kaniko:build-push
 
