@@ -3,7 +3,7 @@ include:
     file: vault-ci.yml
     ref: main
   - project: $CATALOG_PATH
-    file: kaniko-ci-mirror.yml
+    file: kaniko-ci.yml
     ref: main
 
 default:
